@@ -5,34 +5,34 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Gallery from "@/pages/Gallery";
+import Portfolio from "@/pages/Portfolio";
+import Blog from "@/pages/Blog";
 import Navbar from "@/components/layout/Navbar";
-
-function Router() {
-  return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <main className="container mx-auto px-4 py-8">
-        <Switch>
-          <Route path="/" component={Home} />
-          <Route path="/gallery" component={Gallery} />
-          <Route component={NotFound} />
-        </Switch>
-      </main>
-    </div>
-  );
-}
+import { AuthContext, useAuthProvider } from "@/lib/auth";
+import { AuthDialogProvider } from "@/lib/auth-dialog";
 
 function App() {
+  const auth = useAuthProvider();
+
   return (
     <QueryClientProvider client={queryClient}>
-      <Router />
-      <Toaster 
-        className="!fixed !top-4 !left-4"
-        toastOptions={{
-          className: "!bg-white !text-[#2C3E50] !border-2 !border-[#3498DB] !shadow-lg",
-          duration: 5000,
-        }}
-      />
+      <AuthContext.Provider value={auth}>
+        <AuthDialogProvider>
+          <div className="min-h-screen bg-background">
+            <Navbar />
+            <main className="container mx-auto px-4 py-8">
+              <Switch>
+                <Route path="/" component={Home} />
+                <Route path="/gallery" component={Gallery} />
+                <Route path="/blog" component={Blog} />
+                <Route path="/portfolio" component={Portfolio} />
+                <Route component={NotFound} />
+              </Switch>
+            </main>
+          </div>
+          <Toaster />
+        </AuthDialogProvider>
+      </AuthContext.Provider>
     </QueryClientProvider>
   );
 }

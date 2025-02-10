@@ -1,4 +1,5 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { API_BASE_URL } from "./env";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -12,9 +13,24 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
+  const fullUrl = `${API_BASE_URL}${url}`;
+
+  // Get the auth token from the user's session
+  let authToken = '';
+  try {
+    authToken = sessionStorage.getItem('authToken') || '';
+  } catch (e) {
+    console.warn('Failed to get auth token:', e);
+  }
+
+  const headers: Record<string, string> = {
+    ...(data ? { "Content-Type": "application/json" } : {}),
+    ...(authToken ? { "Authorization": `Bearer ${authToken}` } : {})
+  };
+
+  const res = await fetch(fullUrl, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers,
     body: data ? JSON.stringify(data) : undefined,
     credentials: "include",
   });
@@ -29,7 +45,22 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey[0] as string, {
+    const fullUrl = `${API_BASE_URL}${queryKey[0]}`;
+
+    // Get auth token for queries
+    let authToken = '';
+    try {
+      authToken = sessionStorage.getItem('authToken') || '';
+    } catch (e) {
+      console.warn('Failed to get auth token:', e);
+    }
+
+    const headers: Record<string, string> = {
+      ...(authToken ? { "Authorization": `Bearer ${authToken}` } : {})
+    };
+
+    const res = await fetch(fullUrl, {
+      headers,
       credentials: "include",
     });
 

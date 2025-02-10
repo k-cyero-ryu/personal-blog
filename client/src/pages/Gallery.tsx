@@ -5,6 +5,7 @@ import DragDropZone from "@/components/gallery/DragDropZone";
 import { useToast } from "@/hooks/use-toast";
 import type { Photo, InsertPhoto } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/lib/auth";
 import {
   Dialog,
   DialogContent,
@@ -32,6 +33,7 @@ export default function Gallery() {
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const { isAuthenticated } = useAuth();
 
   const { data: photos, isLoading } = useQuery<Photo[]>({
     queryKey: ["/api/photos"],
@@ -163,10 +165,12 @@ export default function Gallery() {
 
   const naturePhotos = photos.filter((photo) => photo.category === "nature");
   const fishingPhotos = photos.filter((photo) => photo.category === "fishing");
+  const macroPhotos = photos.filter((photo) => photo.category === "macro");
+  const socialPhotos = photos.filter((photo) => photo.category === "social");
 
   return (
     <div className="max-w-7xl mx-auto space-y-8">
-      <DragDropZone onFilesDrop={handleFilesDrop} />
+      {isAuthenticated && <DragDropZone onFilesDrop={handleFilesDrop} />}
 
       {/* Upload Dialog */}
       <Dialog open={uploadDialog} onOpenChange={setUploadDialog}>
@@ -189,6 +193,8 @@ export default function Gallery() {
                 <SelectContent>
                   <SelectItem value="nature">Nature</SelectItem>
                   <SelectItem value="fishing">Fishing</SelectItem>
+                  <SelectItem value="macro">Macro</SelectItem>
+                  <SelectItem value="social">Social</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -235,7 +241,9 @@ export default function Gallery() {
                 <Input
                   value={selectedPhoto.title}
                   onChange={(e) =>
-                    setSelectedPhoto((prev) => prev ? ({ ...prev, title: e.target.value }) : null)
+                    setSelectedPhoto((prev) =>
+                      prev ? ({ ...prev, title: e.target.value }) : null
+                    )
                   }
                 />
               </div>
@@ -244,7 +252,9 @@ export default function Gallery() {
                 <Textarea
                   value={selectedPhoto.description || ""}
                   onChange={(e) =>
-                    setSelectedPhoto((prev) => prev ? ({ ...prev, description: e.target.value }) : null)
+                    setSelectedPhoto((prev) =>
+                      prev ? ({ ...prev, description: e.target.value }) : null
+                    )
                   }
                 />
               </div>
@@ -308,9 +318,11 @@ export default function Gallery() {
       </AlertDialog>
 
       <Tabs defaultValue="nature" className="w-full">
-        <TabsList className="grid w-full max-w-[400px] grid-cols-2 mb-8">
+        <TabsList className="grid w-full max-w-[600px] grid-cols-4 mb-8">
           <TabsTrigger value="nature">Nature</TabsTrigger>
           <TabsTrigger value="fishing">Fishing</TabsTrigger>
+          <TabsTrigger value="macro">Macro</TabsTrigger>
+          <TabsTrigger value="social">Social</TabsTrigger>
         </TabsList>
         <TabsContent value="nature">
           <PhotoGrid 
@@ -322,6 +334,20 @@ export default function Gallery() {
         <TabsContent value="fishing">
           <PhotoGrid 
             photos={fishingPhotos}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        </TabsContent>
+        <TabsContent value="macro">
+          <PhotoGrid 
+            photos={macroPhotos}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        </TabsContent>
+        <TabsContent value="social">
+          <PhotoGrid 
+            photos={socialPhotos}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />

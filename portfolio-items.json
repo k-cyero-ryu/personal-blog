@@ -1,0 +1,31 @@
+[
+  {
+    "id": 1,
+    "name": "Photography Portfolio",
+    "description": "A modern photography portfolio showcasing nature, macro, and social photography with advanced image management.",
+    "technologies": [
+      "React",
+      "TypeScript",
+      "Vite",
+      "TailwindCSS",
+      "shadcn/ui"
+    ],
+    "url": "https://portfolio.ronnyreyes.com",
+    "github": "https://github.com/ronnyreyes/portfolio"
+  },
+  {
+    "name": "test proyect",
+    "description": "asdasd asdas dasdasdasd",
+    "technologies": [
+      "asd",
+      "asda",
+      "sadasd",
+      "sadasd",
+      "dasdas",
+      "das"
+    ],
+    "url": "latter",
+    "github": "no yet",
+    "id": 2
+  }
+]

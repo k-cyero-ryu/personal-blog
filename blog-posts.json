@@ -1,0 +1,22 @@
+[
+  {
+    "title": "test post",
+    "content": "my log jojo",
+    "tags": [
+      "ideas"
+    ],
+    "id": 1,
+    "createdAt": "2025-02-10T01:46:26.938Z",
+    "updatedAt": "2025-02-10T01:46:26.938Z"
+  },
+  {
+    "title": "new new",
+    "content": "ADASDA",
+    "tags": [
+      "OTRO"
+    ],
+    "id": 2,
+    "createdAt": "2025-02-10T01:47:00.457Z",
+    "updatedAt": "2025-02-10T01:47:00.457Z"
+  }
+]
