@@ -19,6 +19,22 @@ interface PhotoCardProps {
 export default function PhotoCard({ photo, onEdit, onDelete }: PhotoCardProps) {
   const [isOpen, setIsOpen] = useState(false);
 
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onEdit) {
+      onEdit(photo);
+      setIsOpen(false);
+    }
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onDelete) {
+      onDelete(photo);
+      setIsOpen(false);
+    }
+  };
+
   return (
     <>
       <Card
@@ -33,7 +49,7 @@ export default function PhotoCard({ photo, onEdit, onDelete }: PhotoCardProps) {
           />
         </div>
         <CardHeader className="p-4">
-          <CardTitle className="text-lg font-montserrat text-[#2C3E50]">
+          <CardTitle className="text-lg font-montserrat text-white">
             {photo.title}
           </CardTitle>
         </CardHeader>
@@ -44,10 +60,7 @@ export default function PhotoCard({ photo, onEdit, onDelete }: PhotoCardProps) {
             <Button
               variant="secondary"
               size="icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(photo);
-              }}
+              onClick={handleEdit}
               className="bg-white/90 hover:bg-white shadow-md"
             >
               <Edit className="h-4 w-4" />
@@ -58,10 +71,7 @@ export default function PhotoCard({ photo, onEdit, onDelete }: PhotoCardProps) {
             <Button
               variant="secondary"
               size="icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(photo);
-              }}
+              onClick={handleDelete}
               className="bg-white/90 hover:bg-white shadow-md"
             >
               <Trash2 className="h-4 w-4" />
@@ -83,7 +93,7 @@ export default function PhotoCard({ photo, onEdit, onDelete }: PhotoCardProps) {
             <span className="sr-only">Close</span>
           </Button>
           <DialogHeader>
-            <DialogTitle className="text-2xl font-montserrat text-[#2C3E50]">
+            <DialogTitle className="text-2xl font-montserrat text-white">
               {photo.title}
             </DialogTitle>
           </DialogHeader>
@@ -96,19 +106,19 @@ export default function PhotoCard({ photo, onEdit, onDelete }: PhotoCardProps) {
             <div className="space-y-4">
               {photo.description && (
                 <div>
-                  <h3 className="font-semibold mb-2">Description</h3>
-                  <p className="text-[#34495E] font-open-sans">{photo.description}</p>
+                  <h3 className="font-semibold mb-2 text-white">Description</h3>
+                  <p className="text-white font-open-sans">{photo.description}</p>
                 </div>
               )}
               {photo.aiDescription && (
                 <div>
-                  <h3 className="font-semibold mb-2">AI Analysis</h3>
-                  <p className="text-[#34495E] font-open-sans">{photo.aiDescription}</p>
+                  <h3 className="font-semibold mb-2 text-white">AI Analysis</h3>
+                  <p className="text-white font-open-sans">{photo.aiDescription}</p>
                 </div>
               )}
               {photo.tags && photo.tags.length > 0 && (
                 <div>
-                  <h3 className="font-semibold mb-2">Tags</h3>
+                  <h3 className="font-semibold mb-2 text-white">Tags</h3>
                   <div className="flex flex-wrap gap-2">
                     {photo.tags.map((tag, index) => (
                       <span
@@ -121,21 +131,51 @@ export default function PhotoCard({ photo, onEdit, onDelete }: PhotoCardProps) {
                   </div>
                 </div>
               )}
-              <div className="grid grid-cols-2 gap-4 font-roboto-mono text-sm text-[#34495E]">
+              <div className="grid grid-cols-2 gap-4 font-roboto-mono text-sm text-white">
                 <div>
-                  <strong>Camera:</strong> {photo.camera || 'Not specified'}
+                  <strong>Camera:</strong>{" "}
+                  <button
+                    onClick={handleEdit}
+                    className="hover:underline focus:outline-none"
+                  >
+                    {photo.camera || 'Click to edit'}
+                  </button>
                 </div>
                 <div>
-                  <strong>Lens:</strong> {photo.lens || 'Not specified'}
+                  <strong>Lens:</strong>{" "}
+                  <button
+                    onClick={handleEdit}
+                    className="hover:underline focus:outline-none"
+                  >
+                    {photo.lens || 'Click to edit'}
+                  </button>
                 </div>
                 <div>
-                  <strong>ISO:</strong> {photo.iso || 'Not specified'}
+                  <strong>ISO:</strong>{" "}
+                  <button
+                    onClick={handleEdit}
+                    className="hover:underline focus:outline-none"
+                  >
+                    {photo.iso || 'Click to edit'}
+                  </button>
                 </div>
                 <div>
-                  <strong>Aperture:</strong> {photo.aperture || 'Not specified'}
+                  <strong>Aperture:</strong>{" "}
+                  <button
+                    onClick={handleEdit}
+                    className="hover:underline focus:outline-none"
+                  >
+                    {photo.aperture || 'Click to edit'}
+                  </button>
                 </div>
                 <div>
-                  <strong>Category:</strong> {photo.category}
+                  <strong>Category:</strong>{" "}
+                  <button
+                    onClick={handleEdit}
+                    className="hover:underline focus:outline-none"
+                  >
+                    {photo.category}
+                  </button>
                 </div>
               </div>
             </div>

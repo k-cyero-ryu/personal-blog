@@ -1,13 +1,14 @@
+import { readFile, writeFile } from 'fs/promises';
+import path from 'path';
 import {
-  photos,
-  profile,
   type Photo,
   type Profile,
   type InsertPhoto,
   type InsertProfile,
 } from "@shared/schema";
-import { db } from "./db";
-import { eq } from "drizzle-orm";
+
+const PHOTOS_FILE = path.join(process.cwd(), 'photos.json');
+const PROFILE_FILE = path.join(process.cwd(), 'profile.json');
 
 export interface IStorage {
   getAllPhotos(): Promise<Photo[]>;
@@ -20,51 +21,82 @@ export interface IStorage {
   getPhotoById(id: number): Promise<Photo>;
 }
 
-export class DatabaseStorage implements IStorage {
+const defaultProfile: Profile = {
+  id: 1,
+  name: "Ronny Reyes Infante",
+  title: "Professional Photographer",
+  bio: "Capturing moments and creating memories through the lens.",
+  avatarUrl: "/avatar.jpg",
+  github: "https://github.com/ronnyreyes",
+  linkedin: "https://linkedin.com/in/ronnyreyes",
+};
+
+const defaultPhotos: Photo[] = [];
+
+export class FileStorage implements IStorage {
   async getAllPhotos(): Promise<Photo[]> {
-    return await db.select().from(photos);
+    try {
+      const data = await readFile(PHOTOS_FILE, 'utf-8');
+      return JSON.parse(data);
+    } catch {
+      return defaultPhotos;
+    }
   }
 
   async getPhotosByCategory(category: string): Promise<Photo[]> {
-    return await db.select().from(photos).where(eq(photos.category, category));
+    const photos = await this.getAllPhotos();
+    return photos.filter(photo => photo.category === category);
   }
 
   async getProfile(): Promise<Profile> {
-    const [profileData] = await db.select().from(profile);
-    return profileData;
+    try {
+      const data = await readFile(PROFILE_FILE, 'utf-8');
+      return JSON.parse(data);
+    } catch {
+      return defaultProfile;
+    }
   }
 
   async addPhoto(photo: InsertPhoto): Promise<Photo> {
-    const [newPhoto] = await db.insert(photos).values(photo).returning();
+    const photos = await this.getAllPhotos();
+    const newPhoto = {
+      ...photo,
+      id: Math.max(0, ...photos.map(p => p.id)) + 1
+    };
+    photos.push(newPhoto);
+    await writeFile(PHOTOS_FILE, JSON.stringify(photos, null, 2));
     return newPhoto;
   }
 
   async updateProfile(profileData: Partial<InsertProfile>): Promise<Profile> {
-    const [updatedProfile] = await db
-      .update(profile)
-      .set(profileData)
-      .where(eq(profile.id, 1))
-      .returning();
+    const currentProfile = await this.getProfile();
+    const updatedProfile = { ...currentProfile, ...profileData };
+    await writeFile(PROFILE_FILE, JSON.stringify(updatedProfile, null, 2));
     return updatedProfile;
   }
 
   async updatePhoto(id: number, photoData: Partial<InsertPhoto>): Promise<Photo> {
-    const [updatedPhoto] = await db
-      .update(photos)
-      .set(photoData)
-      .where(eq(photos.id, id))
-      .returning();
-    return updatedPhoto;
+    const photos = await this.getAllPhotos();
+    const index = photos.findIndex(p => p.id === id);
+    if (index === -1) throw new Error('Photo not found');
+
+    photos[index] = { ...photos[index], ...photoData };
+    await writeFile(PHOTOS_FILE, JSON.stringify(photos, null, 2));
+    return photos[index];
   }
 
   async deletePhoto(id: number): Promise<void> {
-    await db.delete(photos).where(eq(photos.id, id));
+    const photos = await this.getAllPhotos();
+    const filteredPhotos = photos.filter(p => p.id !== id);
+    await writeFile(PHOTOS_FILE, JSON.stringify(filteredPhotos, null, 2));
   }
 
   async getPhotoById(id: number): Promise<Photo> {
-    const [photo] = await db.select().from(photos).where(eq(photos.id, id));
+    const photos = await this.getAllPhotos();
+    const photo = photos.find(p => p.id === id);
+    if (!photo) throw new Error('Photo not found');
     return photo;
   }
 }
 
-export const storage = new DatabaseStorage();
+export const storage = new FileStorage();

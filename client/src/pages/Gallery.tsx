@@ -259,6 +259,78 @@ export default function Gallery() {
                 />
               </div>
               <div className="space-y-2">
+                <label className="text-sm font-medium">Camera</label>
+                <Input
+                  value={selectedPhoto.camera || ""}
+                  onChange={(e) =>
+                    setSelectedPhoto((prev) =>
+                      prev ? ({ ...prev, camera: e.target.value }) : null
+                    )
+                  }
+                  placeholder="Enter camera model"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Lens</label>
+                <Input
+                  value={selectedPhoto.lens || ""}
+                  onChange={(e) =>
+                    setSelectedPhoto((prev) =>
+                      prev ? ({ ...prev, lens: e.target.value }) : null
+                    )
+                  }
+                  placeholder="Enter lens model"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">ISO</label>
+                  <Input
+                    type="number"
+                    value={selectedPhoto.iso || ""}
+                    onChange={(e) =>
+                      setSelectedPhoto((prev) =>
+                        prev ? ({ ...prev, iso: Number(e.target.value) }) : null
+                      )
+                    }
+                    placeholder="Enter ISO value"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Aperture</label>
+                  <Input
+                    value={selectedPhoto.aperture || ""}
+                    onChange={(e) =>
+                      setSelectedPhoto((prev) =>
+                        prev ? ({ ...prev, aperture: e.target.value }) : null
+                      )
+                    }
+                    placeholder="e.g., f/2.8"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Category</label>
+                <Select
+                  value={selectedPhoto.category}
+                  onValueChange={(value) =>
+                    setSelectedPhoto((prev) =>
+                      prev ? ({ ...prev, category: value }) : null
+                    )
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="nature">Nature</SelectItem>
+                    <SelectItem value="fishing">Fishing</SelectItem>
+                    <SelectItem value="macro">Macro</SelectItem>
+                    <SelectItem value="social">Social</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
                 <label className="text-sm font-medium">AI Description</label>
                 <p className="text-sm text-muted-foreground">{selectedPhoto.aiDescription}</p>
               </div>
@@ -282,6 +354,11 @@ export default function Gallery() {
                     data: {
                       title: selectedPhoto.title,
                       description: selectedPhoto.description,
+                      camera: selectedPhoto.camera,
+                      lens: selectedPhoto.lens,
+                      iso: selectedPhoto.iso,
+                      aperture: selectedPhoto.aperture,
+                      category: selectedPhoto.category,
                     },
                   });
                 }

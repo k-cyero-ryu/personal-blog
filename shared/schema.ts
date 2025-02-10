@@ -1,35 +1,28 @@
-import { pgTable, text, serial, integer, timestamp } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const photos = pgTable("photos", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  description: text("description"),
-  imageUrl: text("image_url").notNull(),
-  category: text("category").notNull(),
-  tags: text("tags").array(),
-  aiDescription: text("ai_description"),
-  iso: integer("iso"),
-  aperture: text("aperture"),
-  camera: text("camera"),
-  lens: text("lens"),
+export const insertPhotoSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().optional(),
+  imageUrl: z.string().min(1),
+  category: z.string().min(1),
+  tags: z.array(z.string()).optional(),
+  aiDescription: z.string().optional(),
+  iso: z.number().optional(),
+  aperture: z.string().optional(),
+  camera: z.string().optional(),
+  lens: z.string().optional(),
 });
 
-export const profile = pgTable("profile", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  title: text("title").notNull(),
-  bio: text("bio").notNull(),
-  avatarUrl: text("avatar_url").notNull(),
-  github: text("github"),
-  linkedin: text("linkedin"),
+export const insertProfileSchema = z.object({
+  name: z.string().min(1),
+  title: z.string().min(1),
+  bio: z.string().min(1),
+  avatarUrl: z.string().min(1),
+  github: z.string().optional(),
+  linkedin: z.string().optional(),
 });
 
-export const insertPhotoSchema = createInsertSchema(photos).omit({ id: true });
-export const insertProfileSchema = createInsertSchema(profile).omit({ id: true });
-
-export type Photo = typeof photos.$inferSelect;
-export type Profile = typeof profile.$inferSelect;
+export type Photo = z.infer<typeof insertPhotoSchema> & { id: number };
+export type Profile = z.infer<typeof insertProfileSchema> & { id: number };
 export type InsertPhoto = z.infer<typeof insertPhotoSchema>;
 export type InsertProfile = z.infer<typeof insertProfileSchema>;
